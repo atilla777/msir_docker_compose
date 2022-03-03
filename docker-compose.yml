@@ -25,5 +25,7 @@ services:
       - nats
     ports:
       - 9292:9292
+    env_file:
+      - .env
 
 
