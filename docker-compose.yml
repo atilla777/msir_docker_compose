@@ -28,4 +28,12 @@ services:
     env_file:
       - .env
 
-
+  msir_messenger:
+    image: msir_messenger:latest
+    container_name: msir_messenger1
+    depends_on:
+      - "nats"
+    networks:
+      - nats
+    env_file:
+      - .env
