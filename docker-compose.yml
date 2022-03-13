@@ -3,6 +3,7 @@ version: "3.9"
 networks:
   nats:
   otel:
+  loki:
       
 services:
   nats:
@@ -26,10 +27,15 @@ services:
     networks:
       - nats
       - otel
+      - loki
     ports:
       - 9292:9292
     env_file:
       - .env
+    #logging:
+      #driver: loki
+      #options:
+        #loki-url: "http://loki:3100/loki/api/v1/push"
 
   msir_messenger:
     image: msir_messenger:latest
@@ -39,8 +45,13 @@ services:
     networks:
       - nats
       - otel
+      - loki
     env_file:
       - .env
+    #logging:
+      #driver: loki
+      #options:
+        #loki-url: "http://loki:3100/loki/api/v1/push"
 
   otel_collector:
     image: otel/opentelemetry-collector:0.46.0-amd64
@@ -57,9 +68,9 @@ services:
       - ${PWD}/otel-config.yaml:/etc/otel-config.yaml
     env_file:
       - .env
-    depends_on:
-      - jaeger
-      - zipkin
+    #depends_on:
+      #- jaeger
+      #- zipkin
 
   jaeger:
     image: jaegertracing/all-in-one:1.32
@@ -84,3 +95,27 @@ services:
       - 9411:9411
     env_file:
       - .env
+
+  #loki:
+      #image: grafana/loki:2.4.1
+      #container_name: loki
+      #ports:
+        #- 3100:3100
+      #command: -config.file=/etc/loki/local-config.yaml
+      #networks:
+        #- loki
+
+  # promtail:
+  #   image: grafana/promtail:2.4.1
+  #   volumes:
+  #     - /var/log:/var/log
+  #   command: -config.file=/etc/promtail/config.yml
+  #   networks:
+  #     - loki
+
+  #grafana:
+    #image: grafana/grafana:latest
+    #networks:
+      #- loki
+    #ports:
+      #- "3000:3000"
